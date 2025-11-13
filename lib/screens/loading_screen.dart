@@ -1,3 +1,4 @@
+import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:flutter/material.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -7,67 +8,54 @@ class LoadingScreen extends StatefulWidget {
   State<LoadingScreen> createState() => _LoadingScreenState();
 }
 
-class _LoadingScreenState extends State<LoadingScreen> {
-  double progress = 0.0;
+class _LoadingScreenState extends State<LoadingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    // _simulateLoading();
-  }
 
-  void _simulateLoading() {
-    const duration = Duration(seconds: 5);
-    const tick = Duration(milliseconds: 50);
-    int totalTicks = duration.inMilliseconds ~/ tick.inMilliseconds;
-    double increment = 1 / totalTicks;
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
 
-    Future.doWhile(() async {
-      await Future.delayed(tick);
-      setState(() {
-        progress += increment;
-        if (progress > 1) progress = 1;
-      });
-      return progress < 1;
-    }).then((_) {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/menu');
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.forward();
+    });
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.pushReplacementNamed(context, '/startgame');
       }
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.amber.shade50,
-      body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                'assets/loading_bg.png',
-              ), // 🔹 твій шлях до зображення
-              fit: BoxFit.cover, // заповнює весь екран
-            ),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'Loading...',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20),
-                CircularProgressIndicator(color: Colors.white),
-              ],
-            ),
-          ),
-        ),
+    return SafeArea(
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return ChickLayout(
+            showProgressBar: true,
+            progress: _animation.value,
+            chickShow: 1,
+          );
+        },
       ),
     );
   }

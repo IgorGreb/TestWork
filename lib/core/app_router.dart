@@ -1,3 +1,4 @@
+import 'package:chick_game_prototype/screens/start_game_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/loading_screen.dart';
 import '../screens/menu_screen.dart';
@@ -19,4 +20,5 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/shop': (_) => const ShopScreen(),
   '/howtoplay': (_) => const HowToPlayScreen(),
   '/game': (_) => const GameScreen(),
+  '/startgame': (_) => const StartGameScreen(),
 };

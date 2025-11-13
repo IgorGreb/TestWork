@@ -1,3 +1,4 @@
+import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:flutter/material.dart';
 
 class LevelsScreen extends StatelessWidget {
@@ -5,9 +6,6 @@ class LevelsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Levels')),
-      body: const Center(child: Text('This is Levels screen')),
-    );
+    return Scaffold(body: SafeArea(child: ChickLayout(chickShow: 0)));
   }
 }

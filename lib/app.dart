@@ -8,13 +8,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(390, 844),
+      designSize: const Size(1080, 1920),
       minTextAdapt: true,
       builder:
           (_, __) => MaterialApp(
             title: 'Chick Game',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.amber),
             initialRoute: '/loading',
             routes: appRoutes,
           ),
