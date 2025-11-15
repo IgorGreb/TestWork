@@ -32,7 +32,8 @@ class _LoadingScreenState extends State<LoadingScreen>
     });
 
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
+      if (status == AnimationStatus.completed && mounted) {
+        // 🚀 Після заставки переходимо на стартовий екран
         Navigator.pushReplacementNamed(context, '/startgame');
       }
     });
@@ -46,17 +47,15 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return ChickLayout(
-            showProgressBar: true,
-            progress: _animation.value,
-            chickShow: 1,
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return ChickLayout(
+          showProgressBar: true,
+          progress: _animation.value,
+          chickShow: 1,
+        );
+      },
     );
   }
 }

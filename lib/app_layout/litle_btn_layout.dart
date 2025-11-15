@@ -3,29 +3,26 @@ import 'package:flutter/material.dart';
 
 class LitleBtnLayout extends StatelessWidget {
   final Function()? onPressed;
-  final double width;
-  final double height;
+
   final bool or;
 
-  const LitleBtnLayout({
-    super.key,
-    this.onPressed,
-    required this.width,
-    required this.height,
-    required this.or,
-  });
+  const LitleBtnLayout({super.key, this.onPressed, required this.or});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
+      style: TextButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+      ),
       onPressed: onPressed,
-      child: Container(
-        width: width,
-        height: height,
+      child: SizedBox(
+        width: 80,
+        height: 80,
         child:
             or == true
-                ? Image.asset('assets/menu.png')
-                : Image.asset('assets/info.png'),
+                ? Image.asset('assets/btn_webp/menu.webp')
+                : Image.asset('assets/btn_webp/info.webp'),
       ),
     );
   }

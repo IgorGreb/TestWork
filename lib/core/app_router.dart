@@ -9,6 +9,8 @@ import '../screens/leaderboard_screen.dart';
 import '../screens/shop_screen.dart';
 import '../screens/how_to_play_screen.dart';
 import '../screens/game_screen.dart';
+import '../screens/privacy_policy_screen.dart';
+import '../screens/terms_of_use_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/loading': (_) => const LoadingScreen(),
@@ -20,5 +22,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/shop': (_) => const ShopScreen(),
   '/howtoplay': (_) => const HowToPlayScreen(),
   '/game': (_) => const GameScreen(),
+  '/privacy': (_) => const PrivacyPolicyScreen(),
+  '/terms': (_) => const TermsOfUseScreen(),
   '/startgame': (_) => const StartGameScreen(),
 };

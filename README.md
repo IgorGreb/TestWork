@@ -1,16 +1,69 @@
-# chick_game_prototype
+# Chick Game Prototype
 
-A new Flutter project.
+Flutter‑прототип аркади з анімованими фонами, персистентними даними профілю та місіями для поступового відкриття рівнів.  
+Цей документ пояснює ключові концепції, аби нові учасники команди швидко розібралися з кодовою базою.
 
-## Getting Started
+## Стек технологій
 
-This project is a starting point for a Flutter application.
+| Зона               | Вибір / пояснення                                                                |
+|--------------------|----------------------------------------------------------------------------------|
+| UI framework       | Flutter (Material + кастомні лейаути)                                            |
+| State management   | [Riverpod 3](https://riverpod.dev) для профілю, налаштувань, рівнів, магазину     |
+| Адаптивність       | [flutter_screenutil](https://pub.dev/packages/flutter_screenutil)                |
+| Збереження         | `shared_preferences` для KV‑даних + `path_provider` для фотографій               |
+| Візуальні асети    | WebP‑кнопки/підкладки/курча з пакета, наданого замовником                        |
 
-A few resources to get you started if this is your first Flutter project:
+## Структура тек
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```
+lib/
+ ├── app.dart                      # Старт додатка (MaterialApp, роутинг)
+ ├── core/                         # Константи та карта маршрутів
+ ├── app_layout/                   # Повторно використовувані компоненти лейауту
+ ├── widgets/                      # Окремі віджети (кнопка старту, тайл рівня, прогресбар)
+ ├── features/
+ │    └── profile/                 # Стан + контролер профілю на Riverpod
+ ├── screens/                      # Усі екрани застосунку
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Стан
+
+| Провайдер                   | Призначення                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------|
+| `profileControllerProvider`| `StateNotifier`, що читає/зберігає ім’я, email та управляє файлами аватара.                  |
+
+Основні файли:
+- `profile_state.dart` – незмінний об’єкт зі значеннями полів та прапорцями `isLoading`/`isProcessing`.
+- `profile_controller.dart` – I/O логіка (SharedPreferences, файлові операції).
+
+## Навігація
+
+Усі маршрути зареєстровані в `lib/core/app_router.dart`. Екрани викликають `Navigator.pushNamed` або `pushReplacement`, щоб контролювати стек (наприклад, Start → Menu).
+
+## Збереження профілю
+
+1. При створенні провайдера викликається `loadProfile()`.
+2. Дані з `SharedPreferences` підставляються в стан; шлях до аватару резолвиться через директорію Documents.
+3. Нові фото копіюються у Documents (у налаштуваннях зберігається лише ім’я файлу).
+4. `ProfileScreen` слухає провайдер і синхронізує текстові поля + зображення.
+
+## Запуск і тестування
+
+```bash
+flutter pub get
+flutter run
+```
+
+Якщо Flutter не може оновити власний cache (наприклад, у sandbox), виконай команди поза ним або подбай, щоб SDK мав доступ на запис.
+
+Тестів поки немає. Варто покрити:
+- `ProfileController` (логіка копіювання, очищення, завантаження).
+- Потоки навігації Loading → Start → Menu → Profile.
+- Виграш/програш у міні-грі та розблокування рівнів через місії.
+
+## Додавання фіч
+
+1. Для нового стану використовуй Riverpod, щоби уникнути розкиданих `setState`.
+2. Пам’ятай про адаптивність (`ScreenUtil`, готові лейаути).
+3. Нові ресурси додай до секції `assets` у `pubspec.yaml`.
+4. При додаванні рівнів онови `level_missions.dart` та `LevelsController`.

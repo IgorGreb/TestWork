@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'core/app_router.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,8 +9,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(1080, 1920),
+      designSize: const Size(340, 844),
       minTextAdapt: true,
+      splitScreenMode: true,
       builder:
           (_, __) => MaterialApp(
             title: 'Chick Game',
