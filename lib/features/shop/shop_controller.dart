@@ -83,6 +83,14 @@ class ShopController extends StateNotifier<ShopState> {
     return true;
   }
 
+  Future<void> earnCoins(int amount) async {
+    if (amount <= 0) return;
+    final newCoins = state.coins + amount;
+    final prefs = await _ensurePrefs();
+    await prefs.setInt(ShopKeys.coins, newCoins);
+    state = state.copyWith(coins: newCoins);
+  }
+
   Future<SharedPreferences> _ensurePrefs() async {
     if (_prefs != null) return _prefs!;
     _prefs = await SharedPreferences.getInstance();

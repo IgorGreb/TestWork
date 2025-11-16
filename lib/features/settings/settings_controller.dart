@@ -5,6 +5,7 @@ import 'settings_state.dart';
 
 class SettingsKeys {
   static const sound = 'settings_sound';
+  static const music = 'settings_music';
   static const vibration = 'settings_vibration';
   static const notifications = 'settings_notifications';
 }
@@ -25,6 +26,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     final prefs = await _ensurePrefs();
     state = SettingsState(
       soundEnabled: prefs.getBool(SettingsKeys.sound) ?? true,
+      musicEnabled: prefs.getBool(SettingsKeys.music) ?? true,
       vibrationEnabled: prefs.getBool(SettingsKeys.vibration) ?? true,
       notificationsEnabled: prefs.getBool(SettingsKeys.notifications) ?? true,
     );
@@ -34,6 +36,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     try {
       final prefs = await _ensurePrefs();
       await prefs.setBool(SettingsKeys.sound, newState.soundEnabled);
+      await prefs.setBool(SettingsKeys.music, newState.musicEnabled);
       await prefs.setBool(SettingsKeys.vibration, newState.vibrationEnabled);
       await prefs.setBool(
         SettingsKeys.notifications,

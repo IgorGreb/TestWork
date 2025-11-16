@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:chick_game_prototype/app_layout/back_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/chick_layout.dart';
-import 'package:chick_game_prototype/app_layout/menu_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/text_field_layout.dart';
-import 'package:chick_game_prototype/core/constants/custom_colors.dart';
 import 'package:chick_game_prototype/features/profile/profile_controller.dart';
 import 'package:chick_game_prototype/features/profile/profile_state.dart';
 import 'package:chick_game_prototype/screens/start_game_screen.dart';
+import 'package:chick_game_prototype/widgets/arcade_button.dart';
+import 'package:chick_game_prototype/widgets/flame_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -117,25 +116,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context: context,
       builder: (_) {
         return Container(
-          height: 160,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1C1C1F),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text('Choose from gallery'),
-                onTap: () {
+              const Text(
+                'PLEASE MAKE YOUR CHOICE',
+                style: TextStyle(
+                  color: Colors.white,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _BottomSheetButton(
+                label: 'MAKE A PHOTO',
+                onPressed: () {
+                  Navigator.pop(context);
+                  takePhoto();
+                },
+              ),
+              const SizedBox(height: 10),
+              _BottomSheetButton(
+                label: 'CHOOSE PHOTO',
+                onPressed: () {
                   Navigator.pop(context);
                   pickImage();
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Take a photo'),
-                onTap: () {
-                  Navigator.pop(context);
-                  takePhoto();
-                },
+              const SizedBox(height: 10),
+              _BottomSheetButton(
+                label: 'CANCEL',
+                filled: false,
+                onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
@@ -164,155 +187,152 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileControllerProvider);
 
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-
-    final bool adaptForIphone =
-        Theme.of(context).platform == TargetPlatform.iOS && screenHeight < 750;
-
-    final double cardWidthFactor = adaptForIphone ? 0.92 : 0.85;
-    final double avatarRadius = adaptForIphone ? 38 : 45;
-    final double titleFontSize = screenWidth * (adaptForIphone ? 0.06 : 0.07);
-
     return WillPopScope(
       onWillPop: _handleBackNavigation,
       child: ChickLayout(
         chickShow: 0,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final compactHeight = constraints.maxHeight < 700;
-            final spacing =
-                compactHeight ? screenHeight * 0.015 : screenHeight * 0.025;
-
-            Widget content;
-
-            if (profileState.isLoading) {
-              content = const Center(child: CircularProgressIndicator());
-            } else {
-              content = Container(
-                width: screenWidth * (compactHeight ? 0.95 : cardWidthFactor),
-                decoration: BoxDecoration(
-                  color: CustomColors.some.withOpacity(0.5),
-                  border: Border.all(color: CustomColors.pink, width: 2),
-                  borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/info_webp/Rectangle 7.webp'),
-                    fit: BoxFit.cover,
-                  ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: BackBtnLayout(onPressed: _handleBackNavigation),
                 ),
-                padding: EdgeInsets.symmetric(
-                  vertical: spacing,
-                  horizontal: screenWidth * 0.04,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'PROFILE',
-                      style: GoogleFonts.rubikMonoOne(
-                        fontSize: titleFontSize,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    /// Avatar
-                    GestureDetector(
-                      onTap: _showAvatarSourceSheet,
-                      child: CircleAvatar(
-                        radius: avatarRadius,
-                        backgroundColor: Colors.white24,
-                        backgroundImage: _buildAvatarImage(
-                          profileState.imagePath,
-                        ),
-                        child:
-                            profileState.imagePath == null
-                                ? const Icon(
-                                  Icons.person,
-                                  size: 45,
-                                  color: Colors.white,
-                                )
-                                : null,
-                      ),
-                    ),
-
-                    SizedBox(height: spacing),
-
-                    /// Avatar asset picker
-                    SizedBox(
-                      height: 80,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        itemBuilder: (context, index) {
-                          final asset = _avatarAssets[index];
-                          final isSelected =
-                              profileState.imagePath ==
-                              '${ProfileController.assetPrefix}$asset';
-
-                          return GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(profileControllerProvider.notifier)
-                                  .selectAvatarAsset(asset);
-                            },
-                            child: CircleAvatar(
-                              radius: 35,
-                              backgroundImage: AssetImage(asset),
-                              child:
-                                  isSelected
-                                      ? const Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                      )
-                                      : null,
+                const SizedBox(height: 12),
+                Expanded(
+                  child:
+                      profileState.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : FlamePanel(
+                            title: 'PROFILE',
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: _showAvatarSourceSheet,
+                                    child: CircleAvatar(
+                                      radius: 48,
+                                      backgroundColor: Colors.white24,
+                                      backgroundImage: _buildAvatarImage(
+                                        profileState.imagePath,
+                                      ),
+                                      child:
+                                          profileState.imagePath == null
+                                              ? const Icon(
+                                                Icons.person,
+                                                size: 48,
+                                                color: Colors.white,
+                                              )
+                                              : null,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    height: 90,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        final asset = _avatarAssets[index];
+                                        final isSelected =
+                                            profileState.imagePath ==
+                                            '${ProfileController.assetPrefix}$asset';
+                                        return GestureDetector(
+                                          onTap: () {
+                                            ref
+                                                .read(
+                                                  profileControllerProvider
+                                                      .notifier,
+                                                )
+                                                .selectAvatarAsset(asset);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? Colors.yellowAccent
+                                                    : Colors.transparent,
+                                                width: 3,
+                                              ),
+                                            ),
+                                            child: CircleAvatar(
+                                              radius: 32,
+                                              backgroundImage:
+                                                  AssetImage(asset),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (_, __) =>
+                                          const SizedBox(width: 12),
+                                      itemCount: _avatarAssets.length,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  TextFieldLayout(
+                                    text: 'Username',
+                                    controller: usernameController,
+                                    width: double.infinity,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TextFieldLayout(
+                                    text: 'Email',
+                                    controller: emailController,
+                                    width: double.infinity,
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemCount: _avatarAssets.length,
-                      ),
-                    ),
-
-                    TextFieldLayout(
-                      text: 'Username',
-                      controller: usernameController,
-                      width: double.infinity,
-                    ),
-
-                    TextFieldLayout(
-                      text: 'Email',
-                      controller: emailController,
-                      width: double.infinity,
-                    ),
-                  ],
+                          ),
                 ),
-              );
-            }
+                const SizedBox(height: 16),
+                ArcadeButton(label: 'SAVE', onPressed: _saveData),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.04,
-                vertical: screenHeight * 0.02,
-              ),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: BackBtnLayout(onPressed: _handleBackNavigation),
-                  ),
-                  SizedBox(height: spacing),
-                  Expanded(child: Center(child: content)),
-                  SizedBox(height: spacing),
-                  MenuBtnLayout(
-                    btnText: 'SAVE',
-                    routeName: '',
-                    onTapOverride: _saveData,
-                  ),
-                ],
-              ),
-            );
-          },
+class _BottomSheetButton extends StatelessWidget {
+  const _BottomSheetButton({
+    required this.label,
+    required this.onPressed,
+    this.filled = true,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: filled ? Colors.white : Colors.transparent,
+          side: filled
+              ? BorderSide.none
+              : const BorderSide(color: Colors.white, width: 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: filled ? Colors.black : Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.1,
+          ),
         ),
       ),
     );

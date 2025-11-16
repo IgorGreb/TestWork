@@ -2,18 +2,19 @@ import 'package:chick_game_prototype/app_layout/back_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:chick_game_prototype/app_layout/menu_btn_layout.dart';
 import 'package:chick_game_prototype/core/constants/custom_colors.dart';
+import 'package:chick_game_prototype/features/audio/background_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MenuScreen extends StatefulWidget {
+class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen({super.key});
 
   @override
-  State<MenuScreen> createState() => _MenuScreenState();
+  ConsumerState<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen>
+class _MenuScreenState extends ConsumerState<MenuScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _glowController;
   late final Animation<double> _glowAnimation;
@@ -29,10 +30,14 @@ class _MenuScreenState extends State<MenuScreen>
       parent: _glowController,
       curve: Curves.easeInOut,
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(backgroundMusicControllerProvider).setMenuActive(true);
+    });
   }
 
   @override
   void dispose() {
+    ref.read(backgroundMusicControllerProvider).setMenuActive(false);
     _glowController.dispose();
     super.dispose();
   }
@@ -96,60 +101,68 @@ class _MenuScreenState extends State<MenuScreen>
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                Container(
-                  height: screenHeight * 0.7,
-                  width: screenWidth * 0.85,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: CustomColors.some.withOpacity(0.55),
-                    border: Border.all(color: CustomColors.pink, width: 2),
-                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/info_webp/Rectangle 7.webp'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.015,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'MENU',
-                          style: GoogleFonts.rubikMonoOne(
-                            fontSize: screenWidth * 0.07,
-                            color: Colors.white,
+                Expanded(
+                  child: FractionallySizedBox(
+                    heightFactor: 0.75,
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      width: screenWidth * 0.85,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: CustomColors.some.withOpacity(0.55),
+                        border: Border.all(color: CustomColors.pink, width: 2),
+                        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                        image: const DecorationImage(
+                          image: AssetImage(
+                            'assets/info_webp/Rectangle 7.webp',
                           ),
+                          fit: BoxFit.cover,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
-                        const MenuBtnLayout(
-                          btnText: 'PROFILE',
-                          routeName: '/profile',
+                      ),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.015,
                         ),
-                        const MenuBtnLayout(
-                          btnText: 'SETTINGS',
-                          routeName: '/settings',
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'MENU',
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: screenWidth * 0.07,
+                                  ),
+                            ),
+                            SizedBox(height: screenHeight * 0.02),
+                            const MenuBtnLayout(
+                              btnText: 'PROFILE',
+                              routeName: '/profile',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'SETTINGS',
+                              routeName: '/settings',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'LEADERBOARD',
+                              routeName: '/leaderboard',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'SHOP',
+                              routeName: '/shop',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'HOW TO PLAY',
+                              routeName: '/howtoplay',
+                            ),
+                            MenuBtnLayout(
+                              btnText: 'EXIT',
+                              routeName: '',
+                              onTapOverride: _handleExit,
+                            ),
+                          ],
                         ),
-                        const MenuBtnLayout(
-                          btnText: 'LEADERBOARD',
-                          routeName: '/leaderboard',
-                        ),
-                        const MenuBtnLayout(
-                          btnText: 'SHOP',
-                          routeName: '/shop',
-                        ),
-                        const MenuBtnLayout(
-                          btnText: 'HOW TO PLAY',
-                          routeName: '/howtoplay',
-                        ),
-                        MenuBtnLayout(
-                          btnText: 'EXIT',
-                          routeName: '',
-                          onTapOverride: _handleExit,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

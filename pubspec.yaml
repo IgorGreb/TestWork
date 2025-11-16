@@ -21,6 +21,8 @@ dependencies:
   google_fonts: ^6.3.2
   path_provider: ^2.1.5
   image_picker: ^1.2.1
+  intl: ^0.20.2
+  audioplayers: ^6.5.1
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +41,8 @@ flutter:
     - assets/chick_webp/
     - assets/profile_webp/
     - assets/info_webp/
+    - assets/eggs/
+    - assets/sounds/
 
   fonts:
     - family: Rubik Mono One

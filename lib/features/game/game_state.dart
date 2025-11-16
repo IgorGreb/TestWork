@@ -1,75 +1,75 @@
-import 'dart:math';
+import 'board_position.dart';
 
 enum GameStatus { playing, paused, won, lost }
-
-class FallingEgg {
-  final double x;
-  final double y;
-  final double speed;
-  final bool good;
-
-  const FallingEgg({
-    required this.x,
-    required this.y,
-    required this.speed,
-    required this.good,
-  });
-
-  FallingEgg copyWith({double? x, double? y}) {
-    return FallingEgg(x: x ?? this.x, y: y ?? this.y, speed: speed, good: good);
-  }
-}
 
 class GameState {
   final GameStatus status;
   final int score;
-  final int lives;
-  final List<FallingEgg> eggs;
-  final double playerX;
+  final int coinsEarned;
+  final int movesLeft;
+  final List<List<int>> board;
+  final int? selectedRow;
+  final int? selectedCol;
+  final List<BoardPosition>? hintPositions;
+  final DateTime lastInteraction;
   final int targetScore;
   final String missionDescription;
   final int level;
+  final int timeLeftSeconds;
+  final int timeLimitSeconds;
+  final int bestScore;
 
-  const GameState({
+  GameState({
     this.status = GameStatus.playing,
     this.score = 0,
-    this.lives = 5,
-    this.eggs = const [],
-    this.playerX = 0.5,
+    this.coinsEarned = 0,
+    this.movesLeft = 25,
+    this.board = const [],
+    this.selectedRow,
+    this.selectedCol,
+    this.hintPositions,
+    DateTime? lastInteraction,
     this.targetScore = 100,
     this.missionDescription = '',
     this.level = 1,
-  });
+    this.timeLeftSeconds = 0,
+    this.timeLimitSeconds = 0,
+    this.bestScore = 0,
+  }) : lastInteraction = lastInteraction ?? DateTime.now();
 
   GameState copyWith({
     GameStatus? status,
     int? score,
-    int? lives,
-    List<FallingEgg>? eggs,
-    double? playerX,
+    int? coinsEarned,
+    int? movesLeft,
+    List<List<int>>? board,
+    int? selectedRow,
+    int? selectedCol,
+    List<BoardPosition>? hintPositions,
+    DateTime? lastInteraction,
     int? targetScore,
     String? missionDescription,
     int? level,
+    int? timeLeftSeconds,
+    int? timeLimitSeconds,
+    int? bestScore,
   }) {
     return GameState(
       status: status ?? this.status,
       score: score ?? this.score,
-      lives: lives ?? this.lives,
-      eggs: eggs ?? this.eggs,
-      playerX: playerX ?? this.playerX,
+      coinsEarned: coinsEarned ?? this.coinsEarned,
+      movesLeft: movesLeft ?? this.movesLeft,
+      board: board ?? this.board,
+      selectedRow: selectedRow,
+      selectedCol: selectedCol,
+      hintPositions: hintPositions,
+      lastInteraction: lastInteraction ?? this.lastInteraction,
       targetScore: targetScore ?? this.targetScore,
       missionDescription: missionDescription ?? this.missionDescription,
       level: level ?? this.level,
+      timeLeftSeconds: timeLeftSeconds ?? this.timeLeftSeconds,
+      timeLimitSeconds: timeLimitSeconds ?? this.timeLimitSeconds,
+      bestScore: bestScore ?? this.bestScore,
     );
   }
-}
-
-FallingEgg randomEgg(Random random) {
-  final isGood = random.nextBool();
-  return FallingEgg(
-    x: random.nextDouble(),
-    y: -0.1,
-    speed: 0.0005 + random.nextDouble() * 0.01,
-    good: isGood,
-  );
 }
