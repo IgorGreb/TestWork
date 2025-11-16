@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MenuBtnLayout extends StatelessWidget {
   final String btnText;
@@ -19,9 +18,16 @@ class MenuBtnLayout extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     final double widthSize = screenWidth * 0.7;
-    final double heightSize = screenHeight * 0.091;
+    final double heightSize = screenHeight * 0.11;
+    double fontSize = screenWidth * 0.05;
 
-    final double fontSize = screenWidth * 0.04;
+    // Якщо текст довший, поступово зменшуємо шрифт
+    if (btnText.length > 12) {
+      fontSize *= 0.85;
+    }
+    if (btnText.length > 18) {
+      fontSize *= 0.75;
+    }
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: screenHeight * 0.012),
@@ -50,22 +56,13 @@ class MenuBtnLayout extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               btnText,
-              softWrap: true,
+              textAlign: TextAlign.center,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.rubikMonoOne(
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: fontSize,
-                  height: 1.0,
-                  shadows: const [
-                    Shadow(
-                      offset: Offset(1, 2),
-                      color: Colors.black26,
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
+              softWrap: true,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: fontSize,
+                letterSpacing: 1.5,
               ),
             ),
           ),

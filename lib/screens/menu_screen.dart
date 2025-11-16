@@ -1,17 +1,21 @@
 import 'package:chick_game_prototype/app_layout/back_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:chick_game_prototype/app_layout/menu_btn_layout.dart';
-import 'package:chick_game_prototype/core/constants/custom_colors.dart';
+import 'package:chick_game_prototype/app_layout/score_layout.dart';
+import 'package:chick_game_prototype/features/shop/shop_controller.dart';
+import 'package:chick_game_prototype/widgets/menu_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-class MenuScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen({super.key});
 
   @override
-  State<MenuScreen> createState() => _MenuScreenState();
+  ConsumerState<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen>
+class _MenuScreenState extends ConsumerState<MenuScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _glowController;
   late final Animation<double> _glowAnimation;
@@ -43,6 +47,7 @@ class _MenuScreenState extends State<MenuScreen>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final coins = ref.watch(shopControllerProvider).coins;
 
     return WillPopScope(
       onWillPop: () async {
@@ -78,56 +83,39 @@ class _MenuScreenState extends State<MenuScreen>
             ),
             Column(
               children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.025,
-                        vertical: screenHeight * 0.03,
-                      ),
-                      child: BackBtnLayout(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ],
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.04,
+                    vertical: screenHeight * 0.03,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      BackBtnLayout(onPressed: () => Navigator.pop(context)),
+                      ScoreLayout(width: 200, height: 60, score: coins),
+                    ],
+                  ),
                 ),
                 SizedBox(height: screenHeight * 0.02),
                 Expanded(
                   child: FractionallySizedBox(
                     heightFactor: 0.75,
                     alignment: Alignment.topCenter,
-                    child: Container(
-                      width: screenWidth * 0.85,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: CustomColors.some.withOpacity(0.55),
-                        border: Border.all(color: CustomColors.pink, width: 2),
-                        borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                        image: const DecorationImage(
-                          image: AssetImage(
-                            'assets/info_webp/Rectangle 7.webp',
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    child: MenuPanel(
                       child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.015,
-                        ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               'MENU',
                               style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: screenWidth * 0.07,
-                                  ),
+                                  ?.copyWith(color: Colors.white),
                             ),
                             SizedBox(height: screenHeight * 0.02),
+                            const MenuBtnLayout(
+                              btnText: 'PLAY',
+                              routeName: '/levels',
+                            ),
                             const MenuBtnLayout(
                               btnText: 'PROFILE',
                               routeName: '/profile',
@@ -147,6 +135,14 @@ class _MenuScreenState extends State<MenuScreen>
                             const MenuBtnLayout(
                               btnText: 'HOW TO PLAY',
                               routeName: '/howtoplay',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'PRIVACY POLICY',
+                              routeName: '/privacy',
+                            ),
+                            const MenuBtnLayout(
+                              btnText: 'TERMS OF USE',
+                              routeName: '/terms',
                             ),
                             MenuBtnLayout(
                               btnText: 'EXIT',

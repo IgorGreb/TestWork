@@ -14,9 +14,8 @@ import 'package:google_fonts/google_fonts.dart';
 class LevelsScreen extends ConsumerWidget {
   const LevelsScreen({super.key});
 
-  final int totalLevelsToShow = 9; // відображаємо тільки перші 9 рівнів
+  final int totalLevelsToShow = 9;
   final int totalImages = 9;
-  // кількість різних картинок
 
   Future<bool> _handleBackNavigation(BuildContext context) async {
     Navigator.pushReplacement(

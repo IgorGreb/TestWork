@@ -9,13 +9,11 @@ class ProgressBarWithPercent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double height = screenWidth * 0.08; // адаптивна висота (~8% ширини)
+    final double height = screenWidth * 0.08;
     final BorderRadius borderRadius = BorderRadius.circular(height * 0.4);
 
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.1,
-      ), // 10% від ширини
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -46,7 +44,6 @@ class ProgressBarWithPercent extends StatelessWidget {
                 borderRadius: borderRadius,
                 child: Stack(
                   children: [
-                    // 🔹 Анімована заповнена частина
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeOutCubic,
@@ -65,17 +62,15 @@ class ProgressBarWithPercent extends StatelessWidget {
                       ),
                     ),
 
-                    // 🔹 Відсотковий текст
                     Center(
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          // Контур тексту
                           Text(
                             '${(progress * 100).toInt()}%',
                             style: GoogleFonts.rubikMonoOne(
                               textStyle: TextStyle(
-                                fontSize: screenWidth * 0.05, // адаптивно
+                                fontSize: screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
                                 foreground:
                                     Paint()
@@ -85,7 +80,6 @@ class ProgressBarWithPercent extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Заливка тексту
                           Text(
                             '${(progress * 100).toInt()}%',
                             style: GoogleFonts.rubikMonoOne(

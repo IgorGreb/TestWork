@@ -28,12 +28,19 @@ class _LoadingScreenState extends State<LoadingScreen>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(
+        const AssetImage('assets/btn_webp/start_btn.webp'),
+        context,
+      );
+      precacheImage(
+        const AssetImage('assets/chick_webp/chick.webp'),
+        context,
+      );
       _controller.forward();
     });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
-        // 🚀 Після заставки переходимо на стартовий екран
         Navigator.pushReplacementNamed(context, '/startgame');
       }
     });

@@ -24,8 +24,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   void initState() {
     super.initState();
-    // Ping the board once per second and surface a hint whenever the player
-    // has been idle for more than five seconds.
     _hintTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       final mission = _mission;
       if (mission == null) return;
@@ -51,8 +49,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     if (_mission != null) return;
     final args = ModalRoute.of(context)?.settings.arguments as int?;
     final level = args ?? 1;
-    // Cache the mission definition only once, otherwise a hot reload would
-    // re-create the provider with a different instance.
+
     _mission = missionForLevel(level);
   }
 
@@ -154,17 +151,18 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   state: state,
                   onHome: () => Navigator.pop(context),
                   onRestart: () => ref.read(gameProvider.notifier).restart(),
-                  onNext: state.status == GameStatus.won &&
-                          state.level < levelMissions.length
-                      ? () {
-                        final nextLevel = state.level + 1;
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/game',
-                          arguments: nextLevel,
-                        );
-                      }
-                      : null,
+                  onNext:
+                      state.status == GameStatus.won &&
+                              state.level < levelMissions.length
+                          ? () {
+                            final nextLevel = state.level + 1;
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/game',
+                              arguments: nextLevel,
+                            );
+                          }
+                          : null,
                 ),
               ),
             ),

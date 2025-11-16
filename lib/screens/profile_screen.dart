@@ -6,7 +6,7 @@ import 'package:chick_game_prototype/app_layout/text_field_layout.dart';
 import 'package:chick_game_prototype/features/profile/profile_controller.dart';
 import 'package:chick_game_prototype/features/profile/profile_state.dart';
 import 'package:chick_game_prototype/screens/start_game_screen.dart';
-import 'package:chick_game_prototype/widgets/arcade_button.dart';
+import 'package:chick_game_prototype/widgets/start_btn_widget.dart';
 import 'package:chick_game_prototype/widgets/flame_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,10 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             children: [
               const Text(
                 'PLEASE MAKE YOUR CHOICE',
-                style: TextStyle(
-                  color: Colors.white,
-                  letterSpacing: 1.5,
-                ),
+                style: TextStyle(color: Colors.white, letterSpacing: 1.5),
               ),
               const SizedBox(height: 12),
               _BottomSheetButton(
@@ -252,22 +249,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: isSelected
-                                                    ? Colors.yellowAccent
-                                                    : Colors.transparent,
+                                                color:
+                                                    isSelected
+                                                        ? Colors.yellowAccent
+                                                        : Colors.transparent,
                                                 width: 3,
                                               ),
                                             ),
                                             child: CircleAvatar(
                                               radius: 32,
-                                              backgroundImage:
-                                                  AssetImage(asset),
+                                              backgroundImage: AssetImage(
+                                                asset,
+                                              ),
                                             ),
                                           ),
                                         );
                                       },
-                                      separatorBuilder: (_, __) =>
-                                          const SizedBox(width: 12),
+                                      separatorBuilder:
+                                          (_, __) => const SizedBox(width: 12),
                                       itemCount: _avatarAssets.length,
                                     ),
                                   ),
@@ -289,7 +288,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                 ),
                 const SizedBox(height: 16),
-                ArcadeButton(label: 'SAVE', onPressed: _saveData),
+                StartBtnWidget(
+                  label: 'Save',
+                  widthFactor: 0.6,
+                  heightFactor: 0.13,
+                  fontFactor: 0.08,
+                  onPressed: _saveData,
+                ),
               ],
             ),
           ),
@@ -318,9 +323,10 @@ class _BottomSheetButton extends StatelessWidget {
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 14),
           backgroundColor: filled ? Colors.white : Colors.transparent,
-          side: filled
-              ? BorderSide.none
-              : const BorderSide(color: Colors.white, width: 1),
+          side:
+              filled
+                  ? BorderSide.none
+                  : const BorderSide(color: Colors.white, width: 1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

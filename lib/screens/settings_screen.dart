@@ -3,7 +3,7 @@ import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:chick_game_prototype/features/settings/settings_controller.dart';
 import 'package:chick_game_prototype/features/settings/settings_state.dart';
 import 'package:chick_game_prototype/screens/start_game_screen.dart';
-import 'package:chick_game_prototype/widgets/arcade_button.dart';
+import 'package:chick_game_prototype/widgets/start_btn_widget.dart';
 import 'package:chick_game_prototype/widgets/flame_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,9 +55,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          success ? 'Settings saved!' : 'Could not save settings',
-        ),
+        content: Text(success ? 'Settings saved!' : 'Could not save settings'),
       ),
     );
   }
@@ -98,49 +96,60 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingToggle(
                           label: 'Music',
                           value: viewState.musicEnabled,
-                          onChanged: (value) => _onToggle(
-                            value: value,
-                            updater: (state) => state.copyWith(
-                              musicEnabled: value,
-                            ),
-                          ),
+                          onChanged:
+                              (value) => _onToggle(
+                                value: value,
+                                updater:
+                                    (state) =>
+                                        state.copyWith(musicEnabled: value),
+                              ),
                         ),
                         _SettingToggle(
                           label: 'Sound',
                           value: viewState.soundEnabled,
-                          onChanged: (value) => _onToggle(
-                            value: value,
-                            updater: (state) => state.copyWith(
-                              soundEnabled: value,
-                            ),
-                          ),
+                          onChanged:
+                              (value) => _onToggle(
+                                value: value,
+                                updater:
+                                    (state) =>
+                                        state.copyWith(soundEnabled: value),
+                              ),
                         ),
                         _SettingToggle(
                           label: 'Vibration',
                           value: viewState.vibrationEnabled,
-                          onChanged: (value) => _onToggle(
-                            value: value,
-                            updater: (state) => state.copyWith(
-                              vibrationEnabled: value,
-                            ),
-                          ),
+                          onChanged:
+                              (value) => _onToggle(
+                                value: value,
+                                updater:
+                                    (state) =>
+                                        state.copyWith(vibrationEnabled: value),
+                              ),
                         ),
                         _SettingToggle(
                           label: 'Notifications',
                           value: viewState.notificationsEnabled,
-                          onChanged: (value) => _onToggle(
-                            value: value,
-                            updater: (state) => state.copyWith(
-                              notificationsEnabled: value,
-                            ),
-                          ),
+                          onChanged:
+                              (value) => _onToggle(
+                                value: value,
+                                updater:
+                                    (state) => state.copyWith(
+                                      notificationsEnabled: value,
+                                    ),
+                              ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                ArcadeButton(label: 'SAVE', onPressed: _save),
+                StartBtnWidget(
+                  label: 'Save',
+                  widthFactor: 0.6,
+                  heightFactor: 0.13,
+                  fontFactor: 0.08,
+                  onPressed: _save,
+                ),
               ],
             ),
           ),
@@ -176,10 +185,7 @@ class _SettingToggle extends StatelessWidget {
         children: [
           Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           Switch(
             value: value,

@@ -1,6 +1,7 @@
 import 'package:chick_game_prototype/app_layout/back_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:chick_game_prototype/screens/start_game_screen.dart';
+import 'package:chick_game_prototype/widgets/start_btn_widget.dart';
 import 'package:flutter/material.dart';
 
 class HowToPlayScreen extends StatelessWidget {
@@ -30,24 +31,24 @@ class HowToPlayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final steps = <_HowToPlayStep>[
       const _HowToPlayStep(
-        title: 'SWAP & MATCH',
+        title: 'МІНЯЙ ТА ЗБИРАЙ',
         description:
-            'Tap two neighboring eggs to swap them. Line up 3+ identical eggs or a solid 2x2 square to clear the board.',
+            'Торкнись двох сусідніх яєць, щоб поміняти їх місцями. Комбінації з трьох і більше або квадрат 2×2 очищують поле.',
       ),
       const _HowToPlayStep(
-        title: 'CHASE THE TARGET',
+        title: 'ПЕРЕГАНЯЙ ЦІЛЬ',
         description:
-            'Fill the score bar before you run out of moves or time. Combos give coins and power the shop.',
+            'Заповни шкалу очок до того, як закінчаться ходи чи час. Комбо приносять монети для магазину.',
       ),
       const _HowToPlayStep(
-        title: 'USE HINTS WISELY',
+        title: 'КОРИСТУЙСЯ ПІДКАЗКАМИ',
         description:
-            'Stuck for 5 seconds? A glowing outline will show a legal swap. Take it or find a better combo yourself.',
+            'Застряг на 5 секунд? Світла рамка покаже доступний хід — скористайся ним або знайди кращий.',
       ),
       const _HowToPlayStep(
-        title: 'BEAT THE CLOCK',
+        title: 'СТЕЖ ЗА ТАЙМЕРОМ',
         description:
-            'Every mission has a countdown. Keep the board active and finish objectives before the timer explodes.',
+            'Кожна місія має відлік. Утримуй дошку активною та виконуй цілі, поки таймер не згорів.',
       ),
     ];
 
@@ -119,6 +120,16 @@ class HowToPlayScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+                const SizedBox(height: 18),
+                StartBtnWidget(
+                  label: 'ОК',
+                  widthFactor: 0.5,
+                  heightFactor: 0.12,
+                  fontFactor: 0.08,
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/menu');
+                  },
                 ),
               ],
             ),
