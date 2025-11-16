@@ -1,57 +1,55 @@
-# Game Mechanics
+# Механіка гри
 
-## Overview
-- Chick Game is a portrait-only match-3 puzzle built with Flutter and Riverpod.
-- Each mission is a self-contained level with a target score and flavor text (see `lib/features/levels/level_missions.dart`).
-- The player manipulates a 7x7 grid of egg tiles (`lib/features/game/egg_assets.dart`) trying to meet the mission score before running out of moves.
+## Огляд
+- Chick Game — вертикальна match-3 аркада, створена на Flutter + Riverpod.
+- Кожна місія є окремим рівнем із власною ціллю за очками та описом (`lib/features/levels/level_missions.dart`).
+- Гравець працює з дошкою 7x7, заповненою яйцями (`lib/features/game/egg_assets.dart`), і намагається набрати потрібний результат до завершення ходів і таймера.
 
-## Board Initialization
-- `GameController` (`lib/features/game/game_controller.dart`) generates the starting board by filling every cell with a random egg type while rejecting any placement that would immediately create a match of три або квадрат 2×2, потім повторює спробу, доки не зʼявиться хоча б один валідний своп.  
-  Уся ця робота виконується в окремому ізоляті, тому запуск рівня й перегенерація дошки не блокують головний потік.
-- Tiles are represented by integer indices pointing at textures in `eggAssetPaths`.
+## Ініціалізація дошки
+- `GameController` (`lib/features/game/game_controller.dart`) генерує стартове поле, випадково підбираючи яйця для кожної клітинки й відхиляючи варіанти, що одразу утворюють ряд з трьох чи квадрат 2×2. Процес повторюється, поки на новій дошці не з’явиться хоча б один валідний хід.  
+  Генерація виконується в окремому ізоляті, тому запуск рівня та перегенерації не блокують головний ізолят Flutter.
+- Кожен тип яйця представляється цілим числом, що відповідає шляху в `eggAssetPaths`.
 
-## Turn Flow
-1. Player taps any cell to select it (stored as `selectedRow/selectedCol` in `GameState`).
-2. Tapping an adjacent cell attempts a swap. Taps on non-adjacent cells simply move the selection.
-3. The swap is simulated on a cloned board; only swaps that create at least one horizontal/vertical group of ≥3 identical tiles **або** квадрат 2х2 одного типу яйця є валідними. Failed swaps just clear the selection and do not consume a move.
-4. Successful swaps decrement `movesLeft` by one and trigger `_resolveBoard`.
+## Хід гри
+1. Торкніться будь-якої клітинки, щоб виділити її (`selectedRow/selectedCol` у `GameState`).
+2. Дотик по сусідній клітинці намагається обміняти їх місцями; якщо клітинка не сусідня — просто переносить виділення.
+3. Обмін виконується на копії дошки. Хід вважається успішним лише тоді, коли з’являється горизонтальний/вертикальний ряд із ≥3 яєць або квадрат 2×2 одного типу. Невдалий обмін не витрачає хід і скидає виділення.
+4. Успішний обмін зменшує `movesLeft` на 1 і запускає `_resolveBoard`.
 
-## Match Detection & Resolution
-- `_detectMatchGroups` scans rows and columns separately so “T” and “+” shapes are treated as multiple groups sharing tiles, and додатково перевіряє кожен 2х2 блок, щоб врахувати квадратні збіги.
-- `_resolveBoard` loops while matches exist:
-  - Adds all matched positions to a removal set.
-  - Increments `score` by `group.length * 10`.
-  - Awards one coin for every group larger than three and fires haptic feedback.
-  - Removes matched tiles by writing `-1`, collapses columns downward, spawns random eggs at the top, and rescans to allow cascading combos.
-- Після завершення каскаду, якщо на дошці не залишилося жодного можливого ходу, контролер автоматично перегенерує поле (без втрати рахунку чи ходів), щоб гравець не застряг.
-- Win condition: `score >= targetScore`.
-- Loss condition: `movesLeft == 0` while the target score is not met.
+## Виявлення матчів і каскади
+- `_detectMatchGroups` сканує рядки й стовпці окремо, тому фігури на кшталт “T” або “+” враховуються як кілька груп. Далі перевіряються всі блоки 2×2.
+- `_resolveBoard` повторюється, доки на дошці залишаються групи:
+  - усі клітинки, що входять до груп, додаються в множину `removeSet`;
+  - `score` збільшується на `group.length * 10`;
+  - для груп довших за три додається монета й надсилається `HapticFeedback`;
+  - клітинки позначаються значенням `-1`, стовпці обвалюються вниз, зверху додаються нові яйця, потім перевірка починається знову.
+- Якщо після каскаду жодного можливого ходу не лишається, дошка генерується заново (рахунок і ходи не змінюються).
+- Перемога: `score >= targetScore`.  
+  Поразка: закінчилися ходи або час, а ціль не досягнута.
 
-## Moves, Status, and Controls
-- Fresh games start with 25 moves (`GameState` default) **та обмеженням за часом** — кожна місія з `level_missions.dart` має `timeLimitSeconds`, що запускає зворотний відлік. Таймер зупиняється під час паузи та обнуляється при рестарті.
-- Restarting the level regenerates the whole board and resets moves/score/time.
-- `GameStatus` drives UI overlays:
-  - `playing`: normal interaction.
-  - `paused`: shown when the player taps the pause icon; moves/hints freeze.
-  - `won` / `lost`: overlay appears з новим повноекранним повідомленням у стилі макета (великі таблички SCORE/BEST, кнопки HOME/RESTART і яскрава кнопка NEXT на перемогу).
-- Completing a mission notifies `levelsControllerProvider` so that higher missions can unlock.
+## Ходи, статуси та керування
+- Кожна місія стартує з 25 ходами та власним обмеженням за часом (`timeLimitSeconds`). Таймер зупиняється під час паузи й скидається після рестарту.
+- `GameStatus` визначає взаємодію:
+  - `playing` — звичайна взаємодія.
+  - `paused` — таймер і підказки зупиняються.
+  - `won` / `lost` — поверх дошки показується сценографіка з написом, табличками SCORE/BEST і кнопками HOME/RESTART/ (та NEXT на перемогу).
+- Після проходження рівня `levelsControllerProvider` відкриває наступну місію.
 
-## Hints
-- `_hintTimer` in `GameScreen` polls every second. If the player has not interacted with the board for five seconds, the controller scans for the first valid swap and stores its coordinates in `hintPositions`.
-- `_BoardView` highlights hinted tiles with a yellow border, and the hint clears after the next interaction.
+## Підказки
+- У `GameScreen` працює `_hintTimer`, який раз на секунду перевіряє бездіяльність гравця. Якщо минуло 5 секунд без взаємодії, контролер знаходить перший валідний хід і записує його в `hintPositions`.
+- `_BoardView` підсвічує такі клітинки жовтою рамкою. Після наступної дії підказка зникає.
 
-## Coins and Shop Integration
-- Coins reflect in `state.coinsEarned` during the level and are synced into the persistent `ShopController` when matches of four or more are resolved.
-- The shop (`lib/features/shop/shop_controller.dart`) persists balances and purchases via `SharedPreferences`.
-- `finalizeCoins()` now grants a victory bonus once per completed mission: a flat +5 coins plus +2 coins for every unused move, both added to the HUD tally and written to the shop balance.
-- Найкращий рахунок кожного рівня зберігається у `GameStatsRepository` (SharedPreferences) і показується на екрані завершення, що мотивує перевершувати попередні результати.
+## Монети та магазин
+- `state.coinsEarned` відображає монети, здобуті за поточний рівень (комбінації з 4+ яєць). Різниця синхронізується з `ShopController`, який зберігає дані в `SharedPreferences`.
+- `finalizeCoins()` додає бонус за перемогу: +5 монет і +2 за кожен невикористаний хід.
+- `GameStatsRepository` так само в `SharedPreferences` тримає найкращий рекорд для кожного рівня і показує його на фінальному екрані.
 
-## Mission and Progression Context
-- Level data resides in `level_missions.dart` and currently covers nine missions with progressively higher target scores.
-- `GameScreen` reads the desired mission index from the navigation arguments (defaulting to level 1) and caches it for the lifetime of the screen.
-- When `GameStatus.won` is reached the mission is marked as complete, enabling progression across the larger app (leaderboards, shop, etc.).
+## Прогрес та місії
+- У `level_missions.dart` описано дев’ять місій із поступово вищими цілями й лімітами часу.
+- `GameScreen` читає номер місії з аргументів навігації (за замовчуванням 1) і кешує її на час життя екрану.
+- Коли стан переходить у `GameStatus.won`, місія позначається як завершена й стає доступною наступна.
 
-## UI Summary
-- The `ChickLayout` scaffold renders HUD elements—score, target, moves, coins, mission text, pause/play button—and the board grid.
-- Tiles are rendered via `GridView.builder` with `AssetImage` backgrounds, and the selected tile gains a white border for clarity.
-- Winning or losing overlays block the board via a centered column to avoid unintended taps while the player decides what to do next.
+## Підсумок UI
+- Конструкція `ChickLayout` виводить HUD: результат, ціль, ходи, монети, опис місії, кнопку паузи та саму дошку.
+- Клітинки рендеряться через `GridView.builder` із `AssetImage`. Виділені/підказки позначаються рамками.
+- Під час перемоги або поразки поверх дошки показується затінений фон із керуючими кнопками, щоб уникнути випадкових дотиків.

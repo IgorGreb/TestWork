@@ -51,7 +51,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder:
-          (_, __) => MaterialApp(
+          (_, _) => MaterialApp(
             title: 'Chick Game',
             debugShowCheckedModeBanner: false,
             initialRoute: '/loading',

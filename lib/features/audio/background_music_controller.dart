@@ -13,27 +13,17 @@ class BackgroundMusicController {
 
   bool _enabled = true;
   bool _isPlaying = false;
-  bool _menuActive = false;
 
   Future<void> setMusicEnabled(bool enabled) async {
     _enabled = enabled;
-    await _updatePlayback();
-  }
-
-  Future<void> setMenuActive(bool isActive) async {
-    _menuActive = isActive;
-    await _updatePlayback();
-  }
-
-  Future<void> pause() => _pauseIfNeeded();
-
-  Future<void> _updatePlayback() async {
-    if (_enabled && _menuActive) {
+    if (_enabled) {
       await _ensurePlaying();
     } else {
       await _pauseIfNeeded();
     }
   }
+
+  Future<void> pause() => _pauseIfNeeded();
 
   Future<void> _ensurePlaying() async {
     if (_isPlaying) return;

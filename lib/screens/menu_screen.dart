@@ -2,19 +2,16 @@ import 'package:chick_game_prototype/app_layout/back_btn_layout.dart';
 import 'package:chick_game_prototype/app_layout/chick_layout.dart';
 import 'package:chick_game_prototype/app_layout/menu_btn_layout.dart';
 import 'package:chick_game_prototype/core/constants/custom_colors.dart';
-import 'package:chick_game_prototype/features/audio/background_music_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class MenuScreen extends ConsumerStatefulWidget {
+class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
 
   @override
-  ConsumerState<MenuScreen> createState() => _MenuScreenState();
+  State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends ConsumerState<MenuScreen>
+class _MenuScreenState extends State<MenuScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _glowController;
   late final Animation<double> _glowAnimation;
@@ -30,14 +27,10 @@ class _MenuScreenState extends ConsumerState<MenuScreen>
       parent: _glowController,
       curve: Curves.easeInOut,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(backgroundMusicControllerProvider).setMenuActive(true);
-    });
   }
 
   @override
   void dispose() {
-    ref.read(backgroundMusicControllerProvider).setMenuActive(false);
     _glowController.dispose();
     super.dispose();
   }
