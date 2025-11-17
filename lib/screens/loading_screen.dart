@@ -28,11 +28,19 @@ class _LoadingScreenState extends State<LoadingScreen>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(
+        const AssetImage('assets/btn_webp/start_btn.webp'),
+        context,
+      );
+      precacheImage(
+        const AssetImage('assets/chick_webp/chick.webp'),
+        context,
+      );
       _controller.forward();
     });
 
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
+      if (status == AnimationStatus.completed && mounted) {
         Navigator.pushReplacementNamed(context, '/startgame');
       }
     });
@@ -46,17 +54,15 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return ChickLayout(
-            showProgressBar: true,
-            progress: _animation.value,
-            chickShow: 1,
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return ChickLayout(
+          showProgressBar: true,
+          progress: _animation.value,
+          chickShow: 1,
+        );
+      },
     );
   }
 }
